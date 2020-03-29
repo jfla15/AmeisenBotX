@@ -1,8 +1,6 @@
 ﻿using AmeisenBotX.Core.Character.Comparators;
-using AmeisenBotX.Core.Character.Inventory.Enums;
 using AmeisenBotX.Core.Data.Enums;
 using AmeisenBotX.Core.Statemachine.Enums;
-using System;
 using System.Collections.Generic;
 using static AmeisenBotX.Core.Statemachine.Utils.AuraManager;
 using static AmeisenBotX.Core.Statemachine.Utils.InterruptManager;
@@ -66,13 +64,11 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
 
         public override bool IsMelee => true;
 
-        public override IWowItemComparator ItemComparator { get; set; } = new BasicStrengthComparator(new List<ArmorType>() { ArmorType.SHIEDLS });
+        public override IWowItemComparator ItemComparator { get; set; } = new BasicStrengthComparator();
 
         public override CombatClassRole Role => CombatClassRole.Dps;
 
         public override string Version => "1.0";
-
-        private DateTime LastAutoAttackCheck { get; set; }
 
         public override void Execute()
         {
@@ -82,9 +78,8 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
                 return;
             }
 
-            if (DateTime.Now - LastAutoAttackCheck > TimeSpan.FromSeconds(4) && !WowInterface.ObjectManager.Player.IsAutoAttacking)
+            if (!WowInterface.ObjectManager.Player.IsAutoAttacking)
             {
-                LastAutoAttackCheck = DateTime.Now;
                 WowInterface.HookManager.StartAutoAttack();
             }
 

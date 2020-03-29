@@ -204,8 +204,5 @@ namespace AmeisenBotX.Core.Data.Objects.WowObject
                 return (double)value / (double)max * 100.0;
             }
         }
-
-        public override string ToString()
-            => $"[{Guid}]({Level}) {Name}";
     }
 }

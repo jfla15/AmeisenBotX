@@ -1,5 +1,4 @@
 ﻿using AmeisenBotX.Core.Character.Comparators;
-using AmeisenBotX.Core.Character.Inventory.Enums;
 using AmeisenBotX.Core.Data.Enums;
 using AmeisenBotX.Core.Data.Objects.WowObject;
 using AmeisenBotX.Core.Statemachine.Enums;
@@ -20,7 +19,6 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
         private readonly string arcaneMissilesSpell = "Arcane Missiles";
         private readonly string counterspellSpell = "Counterspell";
         private readonly string evocationSpell = "Evocation";
-        private readonly string fireballSpell = "Fireball";
         private readonly string iceBlockSpell = "Ice Block";
         private readonly string icyVeinsSpell = "Icy Veins";
         private readonly string mageArmorSpell = "Mage Armor";
@@ -28,6 +26,7 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
         private readonly string mirrorImageSpell = "Mirror Image";
         private readonly string missileBarrageSpell = "Missile Barrage";
         private readonly string spellStealSpell = "Spellsteal";
+        private readonly string fireballSpell = "Fireball";
 
         public MageArcane(WowInterface wowInterface) : base(wowInterface)
         {
@@ -62,7 +61,7 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
 
         public override bool IsMelee => false;
 
-        public override IWowItemComparator ItemComparator { get; set; } = new BasicIntellectComparator(new List<ArmorType>() { ArmorType.SHIEDLS }, new List<WeaponType>() { WeaponType.ONEHANDED_SWORDS, WeaponType.ONEHANDED_MACES, WeaponType.ONEHANDED_AXES });
+        public override IWowItemComparator ItemComparator { get; set; } = new BasicIntellectComparator();
 
         public DateTime LastSpellstealCheck { get; private set; }
 

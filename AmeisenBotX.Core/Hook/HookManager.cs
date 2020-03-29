@@ -63,22 +63,13 @@ namespace AmeisenBotX.Core.Hook
             => SendChatMessage("/click StaticPopup1Button1");
 
         public void AcceptPartyInvite()
-        {
-            LuaDoString("AcceptGroup();");
-            SendChatMessage("/click StaticPopup1Button1");
-        }
+            => LuaDoString("AcceptGroup();");
 
         public void AcceptResurrect()
-        {
-            LuaDoString("AcceptResurrect();");
-            SendChatMessage("/click StaticPopup1Button1");
-        }
+            => LuaDoString("AcceptResurrect();");
 
         public void AcceptSummon()
-        {
-            LuaDoString("ConfirmSummon();");
-            SendChatMessage("/click StaticPopup1Button1");
-        }
+            => LuaDoString("ConfirmSummon();");
 
         public void CastSpell(string name, bool castOnSelf = false)
         {
@@ -119,9 +110,6 @@ namespace AmeisenBotX.Core.Hook
 
         public void ClearTargetIfDead()
             => SendChatMessage("/cleartarget [dead]");
-
-        public void ClearTargetIfDeadOrFriendly()
-            => SendChatMessage("/cleartarget [dead][noharm]");
 
         public void ClickOnTerrain(Vector3 position)
         {
@@ -369,10 +357,7 @@ namespace AmeisenBotX.Core.Hook
             if (double.TryParse(result, out double value))
             {
                 value = Math.Round(value, 3);
-                value = value > 0 ? value * 1000 : 0;
-
-                AmeisenLogger.Instance.Log("HookManager", $"{spellName} has a cooldown of {value}ms", LogLevel.Verbose);
-                return value;
+                return value > 0 ? value * 1000 : 0;
             }
 
             return -1;
@@ -445,7 +430,7 @@ namespace AmeisenBotX.Core.Hook
         /// <returns>(Spellname, duration)</returns>
         public (string, int) GetUnitCastingInfo(WowLuaUnit luaunit)
         {
-            string command = $"abCastingInfo = \"none,0\"; abSpellName, x, x, x, x, abSpellEndTime = UnitCastingInfo(\"{luaunit}\"); abDuration = ((abSpellEndTime/1000) - GetTime()) * 1000; abCastingInfo = abSpellName..\",\"..abDuration;";
+            string command = $"abCastingInfo = \"none,0\"; abSpellName, x, x, x, x, abSpellEndTime = UnitCastingInfo(\"{luaunit.ToString()}\"); abDuration = ((abSpellEndTime/1000) - GetTime()) * 1000; abCastingInfo = abSpellName..\",\"..abDuration;";
             LuaDoString(command);
 
             string str = GetLocalizedText("abCastingInfo");
@@ -485,15 +470,10 @@ namespace AmeisenBotX.Core.Hook
                 "RETN",
             };
 
-            WowInterface.ObjectManager.UpdateObject(wowUnitA);
-            WowInterface.ObjectManager.UpdateObject(wowUnitB);
-
             if (wowUnitA.IsDead || wowUnitB.IsDead)
             {
                 return reaction;
             }
-
-            AmeisenLogger.Instance.Log("HookManager", $"Getting Reaction of {wowUnitA} and {wowUnitB}", LogLevel.Verbose);
 
             try
             {
@@ -597,7 +577,7 @@ namespace AmeisenBotX.Core.Hook
                     }
                     catch (Exception e)
                     {
-                        AmeisenLogger.Instance.Log("HookManager", $"Failed to read return bytes:\n{e}", LogLevel.Error);
+                        AmeisenLogger.Instance.Log("HookManager", $"Failed to read return bytes:\n{e.ToString()}", LogLevel.Error);
                     }
                 }
 
@@ -605,7 +585,7 @@ namespace AmeisenBotX.Core.Hook
             }
             catch (Exception e)
             {
-                AmeisenLogger.Instance.Log("HookManager", $"Failed to inject:\n{e}", LogLevel.Error);
+                AmeisenLogger.Instance.Log("HookManager", $"Failed to inject:\n{e.ToString()}", LogLevel.Error);
 
                 // now there is no more code to be executed
                 WowInterface.XMemory.Write(CodeToExecuteAddress, 0);
@@ -791,7 +771,7 @@ namespace AmeisenBotX.Core.Hook
             EndsceneAddress = IntPtr.Add(EndsceneAddress, ENDSCENE_HOOK_OFFSET);
             EndsceneReturnAddress = IntPtr.Add(EndsceneAddress, 0x5);
 
-            AmeisenLogger.Instance.Log("HookManager", $"Endscene is at: {EndsceneAddress:X}", LogLevel.Verbose);
+            AmeisenLogger.Instance.Log("HookManager", $"Endscene is at: {EndsceneAddress.ToString("X")}", LogLevel.Verbose);
 
             // if WoW is already hooked, unhook it
             if (IsWoWHooked)
@@ -893,7 +873,7 @@ namespace AmeisenBotX.Core.Hook
 
         public void StartAutoAttack() => SendChatMessage("/startattack");
 
-        public void StopClickToMoveIfActive(WowPlayer player)
+        public void StopClickToMove(WowPlayer player)
         {
             if (IsClickToMoveActive())
             {
@@ -917,7 +897,7 @@ namespace AmeisenBotX.Core.Hook
         }
 
         public void TargetLuaUnit(WowLuaUnit unit)
-            => LuaDoString($"TargetUnit(\"{unit}\");");
+            => LuaDoString($"TargetUnit(\"{unit.ToString()}\");");
 
         public void TargetNearestEnemy()
             => SendChatMessage("/targetenemy [harm][nodead]");
@@ -943,7 +923,7 @@ namespace AmeisenBotX.Core.Hook
 
             CodeToExecuteAddress = codeToExecuteAddress;
             WowInterface.XMemory.Write(CodeToExecuteAddress, 0);
-            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodeToExecuteAddress: {codeToExecuteAddress:X}", LogLevel.Verbose);
+            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodeToExecuteAddress: {codeToExecuteAddress.ToString("X")}", LogLevel.Verbose);
 
             // integer to save the pointer to the return value
             if (!WowInterface.XMemory.AllocateMemory(4, out IntPtr returnValueAddress))
@@ -953,7 +933,7 @@ namespace AmeisenBotX.Core.Hook
 
             ReturnValueAddress = returnValueAddress;
             WowInterface.XMemory.Write(ReturnValueAddress, 0);
-            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook ReturnValueAddress: {returnValueAddress:X}", LogLevel.Verbose);
+            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook ReturnValueAddress: {returnValueAddress.ToString("X")}", LogLevel.Verbose);
 
             // codecave to check wether we need to execute something
             if (!WowInterface.XMemory.AllocateMemory(128, out IntPtr codecaveForCheck))
@@ -962,7 +942,7 @@ namespace AmeisenBotX.Core.Hook
             }
 
             CodecaveForCheck = codecaveForCheck;
-            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodecaveForCheck: {codecaveForCheck:X}", LogLevel.Verbose);
+            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodecaveForCheck: {codecaveForCheck.ToString("X")}", LogLevel.Verbose);
 
             // codecave for the code we wan't to execute
             if (!WowInterface.XMemory.AllocateMemory(2048, out IntPtr codecaveForExecution))
@@ -971,7 +951,7 @@ namespace AmeisenBotX.Core.Hook
             }
 
             CodecaveForExecution = codecaveForExecution;
-            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodecaveForExecution: {codecaveForExecution:X}", LogLevel.Verbose);
+            AmeisenLogger.Instance.Log("HookManager", $"EndsceneHook CodecaveForExecution: {codecaveForExecution.ToString("X")}", LogLevel.Verbose);
 
             return true;
         }
@@ -1012,7 +992,7 @@ namespace AmeisenBotX.Core.Hook
 
         private List<string> ReadAuras(WowLuaUnit luaunit, string functionName)
         {
-            string command = $"local a,b={{}},1;local c={functionName}(\"{luaunit}\",b)while c do a[#a+1]=c;b=b+1;c={functionName}(\"{luaunit}\",b)end;if#a<1 then a=\"\"else activeAuras=table.concat(a,\",\")end";
+            string command = $"local a,b={{}},1;local c={functionName}(\"{luaunit.ToString()}\",b)while c do a[#a+1]=c;b=b+1;c={functionName}(\"{luaunit.ToString()}\",b)end;if#a<1 then a=\"\"else activeAuras=table.concat(a,\",\")end";
 
             LuaDoString(command);
             string[] debuffs = GetLocalizedText("activeAuras").Split(',');

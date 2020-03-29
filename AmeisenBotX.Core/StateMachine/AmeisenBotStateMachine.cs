@@ -64,11 +64,7 @@ namespace AmeisenBotX.Core.Statemachine
 
         public BotState LastState { get; private set; }
 
-        public MapId MapIDiedOn { get; internal set; }
-
         public string PlayerName { get; internal set; }
-
-        public Dictionary<BotState, BasicState> States { get; private set; }
 
         internal WowInterface WowInterface { get; }
 
@@ -77,6 +73,10 @@ namespace AmeisenBotX.Core.Statemachine
         private DateTime LastEventPull { get; set; }
 
         private DateTime LastGhostCheck { get; set; }
+
+        public Dictionary<BotState, BasicState> States { get; private set; }
+
+        public MapId MapIDiedOn { get; internal set; }
 
         public void Execute()
         {
@@ -138,19 +138,18 @@ namespace AmeisenBotX.Core.Statemachine
                 && !((StateLooting)States[BotState.Looting]).UnitsAlreadyLootedList.Contains(e.Guid)
                 && e.Position.GetDistance(WowInterface.ObjectManager.Player.Position) < Config.LootUnitsRadius);
 
-        internal bool HasFoodInBag()
-            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowFood), e));
-
-        internal bool HasRefreshmentInBag()
-            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowRefreshment), e));
-
-        internal bool HasWaterInBag()
-            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowWater), e));
-
         internal bool IsAnyPartymemberInCombat()
-                                    => WowInterface.ObjectManager.WowObjects.OfType<WowPlayer>()
+                    => WowInterface.ObjectManager.WowObjects.OfType<WowPlayer>()
             .Where(e => WowInterface.ObjectManager.PartymemberGuids.Contains(e.Guid))
             .Any(r => r.IsInCombat);
+
+        internal bool IsInCapitalCity()
+        {
+            return false;
+        }
+
+        internal bool IsDungeonMap(MapId map)
+            => map == MapId.Deadmines;
 
         internal bool IsBattlegroundMap(MapId map)
             => map == MapId.AlteracValley
@@ -159,13 +158,14 @@ namespace AmeisenBotX.Core.Statemachine
             || map == MapId.EyeOfTheStorm
             || map == MapId.StrandOfTheAncients;
 
-        internal bool IsDungeonMap(MapId map)
-            => map == MapId.Deadmines;
+        internal bool HasFoodInBag()
+            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowFood), e));
 
-        internal bool IsInCapitalCity()
-        {
-            return false;
-        }
+        internal bool HasWaterInBag()
+            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowWater), e));
+
+        internal bool HasRefreshmentInBag()
+            => WowInterface.CharacterManager.Inventory.Items.Select(e => e.Id).Any(e => Enum.IsDefined(typeof(WowRefreshment), e));
 
         internal void SetState(BotState state, bool ignoreExit = false)
         {

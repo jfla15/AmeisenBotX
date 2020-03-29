@@ -1,12 +1,12 @@
 ﻿using AmeisenBotX.Core.Character.Comparators.Objects;
-using AmeisenBotX.Core.Character.Inventory.Enums;
+using AmeisenBotX.Core.Character.Inventory.Objects;
 using System.Collections.Generic;
 
 namespace AmeisenBotX.Core.Character.Comparators
 {
-    public class BasicAgilityComparator : BasicComparator
+    public class BasicAgilityComparator : IWowItemComparator
     {
-        public BasicAgilityComparator(List<ArmorType> armorTypeBlacklist = null, List<WeaponType> weaponTypeBlacklist = null) : base(armorTypeBlacklist, weaponTypeBlacklist)
+        public BasicAgilityComparator()
         {
             GearscoreFactory = new GearscoreFactory(new Dictionary<string, double>() {
                 { "ITEM_MOD_AGILITY_SHORT", 8 },
@@ -15,6 +15,15 @@ namespace AmeisenBotX.Core.Character.Comparators
                 { "RESISTANCE0_NAME", 2 },
                 { "ITEM_MOD_DAMAGE_PER_SECOND_SHORT", 1 },
             });
+        }
+
+        private GearscoreFactory GearscoreFactory { get; }
+
+        public bool IsBetter(IWowItem current, IWowItem item)
+        {
+            double scoreCurrent = GearscoreFactory.Calculate(current);
+            double scoreNew = GearscoreFactory.Calculate(item);
+            return scoreCurrent < scoreNew;
         }
     }
 }

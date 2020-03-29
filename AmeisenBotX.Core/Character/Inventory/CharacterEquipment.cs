@@ -9,9 +9,6 @@ namespace AmeisenBotX.Core.Character.Inventory
 {
     public class CharacterEquipment
     {
-        private readonly object queryLock = new object();
-        private Dictionary<EquipmentSlot, IWowItem> items;
-
         public CharacterEquipment(WowInterface wowInterface)
         {
             WowInterface = wowInterface;
@@ -21,24 +18,7 @@ namespace AmeisenBotX.Core.Character.Inventory
 
         public double AverageItemLevel { get; private set; }
 
-        public Dictionary<EquipmentSlot, IWowItem> Items
-        {
-            get
-            {
-                lock (queryLock)
-                {
-                    return items;
-                }
-            }
-
-            set
-            {
-                lock (queryLock)
-                {
-                    items = value;
-                }
-            }
-        }
+        public Dictionary<EquipmentSlot, IWowItem> Items { get; private set; }
 
         private WowInterface WowInterface { get; }
 
@@ -54,21 +34,18 @@ namespace AmeisenBotX.Core.Character.Inventory
             {
                 List<WowBasicItem> rawEquipment = ItemFactory.ParseItemList(resultJson);
 
-                lock (queryLock)
+                Items.Clear();
+                foreach (WowBasicItem rawItem in rawEquipment)
                 {
-                    Items.Clear();
-                    foreach (WowBasicItem rawItem in rawEquipment)
-                    {
-                        IWowItem item = ItemFactory.BuildSpecificItem(rawItem);
-                        Items.Add(item.EquipSlot, item);
-                    }
+                    IWowItem item = ItemFactory.BuildSpecificItem(rawItem);
+                    Items.Add(item.EquipSlot, item);
                 }
 
                 AverageItemLevel = GetAverageItemLevel();
             }
             catch (Exception e)
             {
-                AmeisenLogger.Instance.Log("CharacterManager", $"Failed to parse Equipment JSON:\n{resultJson}\n{e}", LogLevel.Error);
+                AmeisenLogger.Instance.Log("CharacterManager", $"Failed to parse Equipment JSON:\n{resultJson}\n{e.ToString()}", LogLevel.Error);
             }
         }
 

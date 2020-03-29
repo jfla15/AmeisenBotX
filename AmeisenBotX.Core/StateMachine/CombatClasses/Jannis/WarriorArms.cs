@@ -1,8 +1,8 @@
 ﻿using AmeisenBotX.Core.Character.Comparators;
-using AmeisenBotX.Core.Character.Inventory.Enums;
 using AmeisenBotX.Core.Data.Enums;
 using AmeisenBotX.Core.Data.Objects.WowObject;
 using AmeisenBotX.Core.Statemachine.Enums;
+using AmeisenBotX.Core.Statemachine.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,19 +15,19 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
     {
         // author: Jannis Höschele
 
-        private readonly string battleStanceSpell = "Battle Stance";
-        private readonly string bladestormSpell = "Bladestorm";
-        private readonly string chargeSpell = "Charge";
-        private readonly string commandingShoutSpell = "Commanding Shout";
-        private readonly string disarmSpell = "Disarm";
-        private readonly string executeSpell = "Execute";
-        private readonly string hamstringSpell = "Hamstring";
+        private readonly string rendSpell = "Rend";
+        private readonly string overpowerSpell = "Overpower";
+        private readonly string mortalStrikeSpell = "Mortal Strike";
         private readonly string heroicStrikeSpell = "Heroic Strike";
+        private readonly string battleStanceSpell = "Battle Stance";
+        private readonly string hamstringSpell = "Hamstring";
+        private readonly string chargeSpell = "Charge";
         private readonly string interceptSpell = "Intercept";
         private readonly string intimidatingShoutSpell = "Intimidating Shout";
-        private readonly string mortalStrikeSpell = "Mortal Strike";
-        private readonly string overpowerSpell = "Overpower";
-        private readonly string rendSpell = "Rend";
+        private readonly string commandingShoutSpell = "Commanding Shout";
+        private readonly string disarmSpell = "Disarm";
+        private readonly string bladestormSpell = "Bladestorm";
+        private readonly string executeSpell = "Execute";
 
         public WarriorArms(WowInterface wowInterface) : base(wowInterface)
         {
@@ -64,25 +64,23 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
 
         public override bool IsMelee => true;
 
-        public override IWowItemComparator ItemComparator { get; set; } = new BasicStrengthComparator(new List<ArmorType>() { ArmorType.SHIEDLS }, new List<WeaponType>() { WeaponType.ONEHANDED_SWORDS, WeaponType.ONEHANDED_MACES, WeaponType.ONEHANDED_AXES });
+        public override IWowItemComparator ItemComparator { get; set; } = new BasicStrengthComparator();
 
         public override CombatClassRole Role => CombatClassRole.Dps;
 
         public override string Version => "1.0";
 
-        private DateTime LastAutoAttackCheck { get; set; }
-
         public override void Execute()
         {
             // we dont want to do anything if we are casting something...
-            if (WowInterface.ObjectManager.Player.IsCasting)
+            if (WowInterface.ObjectManager.Player.IsCasting
+                || WowInterface.ObjectManager.TargetGuid == WowInterface.ObjectManager.PlayerGuid)
             {
                 return;
             }
 
-            if (DateTime.Now - LastAutoAttackCheck > TimeSpan.FromSeconds(4) && !WowInterface.ObjectManager.Player.IsAutoAttacking)
+            if (!WowInterface.ObjectManager.Player.IsAutoAttacking)
             {
-                LastAutoAttackCheck = DateTime.Now;
                 WowInterface.HookManager.StartAutoAttack();
             }
 
@@ -96,7 +94,7 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
             if (WowInterface.ObjectManager.Target != null)
             {
                 double distanceToTarget = WowInterface.ObjectManager.Target.Position.GetDistance(WowInterface.ObjectManager.Player.Position);
-
+                
                 if (distanceToTarget > 3)
                 {
                     if (CastSpellIfPossible(chargeSpell, WowInterface.ObjectManager.Target.Guid, true)
@@ -113,7 +111,7 @@ namespace AmeisenBotX.Core.Statemachine.CombatClasses.Jannis
                         return;
                     }
 
-                    if ((WowInterface.ObjectManager.WowObjects.OfType<WowUnit>().Where(e => WowInterface.ObjectManager.Target.Position.GetDistance(e.Position) < 8).Count() > 2 && CastSpellIfPossible(bladestormSpell, 0, true))
+                    if ((WowInterface.ObjectManager.WowObjects.OfType<WowUnit>().Where(e => WowInterface.ObjectManager.Target.Position.GetDistance(e.Position) < 16).Count() > 2 && CastSpellIfPossible(bladestormSpell, 0, true))
                         || CastSpellIfPossible(overpowerSpell, WowInterface.ObjectManager.TargetGuid, true)
                         || CastSpellIfPossible(mortalStrikeSpell, WowInterface.ObjectManager.TargetGuid, true)
                         || CastSpellIfPossible(heroicStrikeSpell, WowInterface.ObjectManager.TargetGuid, true))

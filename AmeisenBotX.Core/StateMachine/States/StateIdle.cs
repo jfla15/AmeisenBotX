@@ -14,9 +14,9 @@ namespace AmeisenBotX.Core.Statemachine.States
 
         private DateTime LastBagSlotCheck { get; set; }
 
-        private DateTime LastEatCheck { get; set; }
-
         private DateTime LastLoot { get; set; }
+
+        private DateTime LastEatCheck { get; set; }
 
         private DateTime LastRepairCheck { get; set; }
 
@@ -45,7 +45,7 @@ namespace AmeisenBotX.Core.Statemachine.States
                 CheckForBattlegroundInvites();
             }
 
-            // do we need to loot stuff
+            // do we need to repair our equipment
             if (DateTime.Now - LastLoot > TimeSpan.FromSeconds(1))
             {
                 LastLoot = DateTime.Now;
@@ -57,7 +57,7 @@ namespace AmeisenBotX.Core.Statemachine.States
                 }
             }
 
-            // do we need to eat something
+            // do we need to repair our equipment
             if (DateTime.Now - LastEatCheck > TimeSpan.FromSeconds(2))
             {
                 LastEatCheck = DateTime.Now;
@@ -94,23 +94,20 @@ namespace AmeisenBotX.Core.Statemachine.States
             }
 
             // do we need to repair our equipment
-            if (DateTime.Now - LastRepairCheck > TimeSpan.FromSeconds(6))
+            if (DateTime.Now - LastRepairCheck > TimeSpan.FromSeconds(12))
             {
                 LastRepairCheck = DateTime.Now;
 
-                if (IsRepairNpcNear())
+                if (IsRepairNpcNear()
+                    && WowInterface.CharacterManager.Equipment.Items.Any(e => ((double)e.Value.MaxDurability / (double)e.Value.Durability) < 0.2))
                 {
-                    WowInterface.CharacterManager.Equipment.Update();
-                    if (WowInterface.CharacterManager.Equipment.Items.Any(e => e.Value.MaxDurability > 0 && e.Value.Durability == 0))
-                    {
-                        StateMachine.SetState(BotState.Repairing);
-                        return;
-                    }
+                    StateMachine.SetState(BotState.Repairing);
+                    return;
                 }
             }
 
             // do we need to sell stuff
-            if (DateTime.Now - LastBagSlotCheck > TimeSpan.FromSeconds(6)
+            if (DateTime.Now - LastBagSlotCheck > TimeSpan.FromSeconds(5)
                 && WowInterface.CharacterManager.Inventory.Items.Any(e => e.Price > 0))
             {
                 LastBagSlotCheck = DateTime.Now;

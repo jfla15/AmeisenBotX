@@ -139,7 +139,7 @@ namespace AmeisenBotX.Core.Movement.Objects
 
         public Vector3 Unstuck(int multiplier)
         {
-            Vector3 positionBehindMe = CalculatPositionnBehind(GetPosition.Invoke(), GetRotation(), 8);
+            Vector3 positionBehindMe = CalculatPositionnBehind(GetPosition.Invoke(), GetRotation(), 4);
             return Seek(positionBehindMe, multiplier);
         }
 
