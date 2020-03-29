@@ -3,13 +3,16 @@ using System.Windows.Input;
 
 namespace AmeisenBotX.Views
 {
+    /// <summary>
+    /// Interaktionslogik für ConfirmWindow.xaml
+    /// </summary>
     public partial class ConfirmWindow : Window
     {
-        public ConfirmWindow(string title, string message, string btnOkayText = "✔️ Okay", string btnCancelText = "❌ Cancel")
+        public ConfirmWindow(string title, string message, string btnOkayText = "Okay", string btnCancelText = "Cancel")
         {
             InitializeComponent();
 
-            messageTitle.Content = title;
+            messageTitle.Text = title;
             messageLabel.Text = message;
 
             if (message.Length > 64)

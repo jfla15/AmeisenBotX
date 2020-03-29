@@ -28,8 +28,6 @@ namespace AmeisenBotX.Core.Hook
 
         void ClearTargetIfDead();
 
-        void ClearTargetIfDeadOrFriendly();
-
         void ClickOnTerrain(Vector3 position);
 
         void ClickToMove(WowPlayer player, Vector3 position);
@@ -142,7 +140,7 @@ namespace AmeisenBotX.Core.Hook
 
         void StartAutoAttack();
 
-        void StopClickToMoveIfActive(WowPlayer player);
+        void StopClickToMove(WowPlayer player);
 
         void TargetGuid(ulong guid);
 

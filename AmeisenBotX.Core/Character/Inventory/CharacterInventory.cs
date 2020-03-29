@@ -8,33 +8,13 @@ namespace AmeisenBotX.Core.Character.Inventory
 {
     public class CharacterInventory
     {
-        private readonly object queryLock = new object();
-        private List<IWowItem> items;
-
         public CharacterInventory(WowInterface wowInterface)
         {
             WowInterface = wowInterface;
             Items = new List<IWowItem>();
         }
 
-        public List<IWowItem> Items
-        {
-            get
-            {
-                lock (queryLock)
-                {
-                    return items;
-                }
-            }
-
-            set
-            {
-                lock (queryLock)
-                {
-                    items = value;
-                }
-            }
-        }
+        public List<IWowItem> Items { get; private set; }
 
         private WowInterface WowInterface { get; }
 
@@ -46,18 +26,15 @@ namespace AmeisenBotX.Core.Character.Inventory
             {
                 List<WowBasicItem> basicItems = ItemFactory.ParseItemList(resultJson);
 
-                lock (queryLock)
+                Items.Clear();
+                foreach (WowBasicItem basicItem in basicItems)
                 {
-                    Items.Clear();
-                    foreach (WowBasicItem basicItem in basicItems)
-                    {
-                        Items.Add(ItemFactory.BuildSpecificItem(basicItem));
-                    }
+                    Items.Add(ItemFactory.BuildSpecificItem(basicItem));
                 }
             }
             catch (Exception e)
             {
-                AmeisenLogger.Instance.Log("CharacterManager", $"Failed to parse Inventory JSON:\n{resultJson}\n{e}", LogLevel.Error);
+                AmeisenLogger.Instance.Log("CharacterManager", $"Failed to parse Inventory JSON:\n{resultJson}\n{e.ToString()}", LogLevel.Error);
             }
         }
     }

@@ -28,10 +28,8 @@ namespace AmeisenBotX.Core.Statemachine.Utils
         {
             if (Cooldowns.ContainsKey(spellname.ToUpper()))
             {
-                if (Cooldowns.TryGetValue(spellname.ToUpper(), out DateTime dateTime))
-                {
-                    return dateTime > DateTime.Now;
-                }
+                return Cooldowns.TryGetValue(spellname.ToUpper(), out DateTime dateTime)
+                       && dateTime > DateTime.Now;
             }
 
             return false;

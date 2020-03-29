@@ -8,12 +8,15 @@ namespace AmeisenBotX.Core.Statemachine.States
     {
         public StateEating(AmeisenBotStateMachine stateMachine, AmeisenBotConfig config, WowInterface wowInterface) : base(stateMachine, config, wowInterface)
         {
+            WowInterface = wowInterface;
         }
 
-        private string CurrentlyDrinking { get; set; }
+        private WowInterface WowInterface { get; }
 
         private string CurrentlyEating { get; set; }
 
+        private string CurrentlyDrinking { get; set; }
+               
         private DateTime LastAction { get; set; }
 
         public override void Enter()

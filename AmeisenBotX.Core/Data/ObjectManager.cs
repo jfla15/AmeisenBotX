@@ -85,8 +85,7 @@ namespace AmeisenBotX.Core.Data
 
         public IEnumerable<T> GetNearEnemies<T>(Vector3 position, double distance) where T : WowUnit
             => WowObjects.OfType<T>()
-                .Where(e => e != null
-                && e.Guid != PlayerGuid
+                .Where(e => e.Guid != PlayerGuid
                 && !e.IsDead
                 && !e.IsNotAttackable
                 && WowInterface.HookManager.GetUnitReaction(Player, e) != WowUnitReaction.Friendly
@@ -94,8 +93,7 @@ namespace AmeisenBotX.Core.Data
 
         public IEnumerable<T> GetNearFriends<T>(Vector3 position, int distance) where T : WowUnit
             => WowObjects.OfType<T>()
-                .Where(e => e != null
-                && e.Guid != PlayerGuid
+                .Where(e => e.Guid != PlayerGuid
                 && !e.IsDead
                 && !e.IsNotAttackable
                 && WowInterface.HookManager.GetUnitReaction(Player, e) == WowUnitReaction.Friendly

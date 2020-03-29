@@ -100,7 +100,7 @@ namespace AmeisenBotX.Core.Movement
             Vector3 targetPosition = CurrentPath.Peek();
             double distanceToTargetPosition = currentPosition.GetDistance(targetPosition);
 
-            if (distanceToTargetPosition > 512)
+            if (distanceToTargetPosition > 128)
             {
                 Reset();
                 return;
@@ -115,12 +115,6 @@ namespace AmeisenBotX.Core.Movement
                 {
                     return;
                 }
-            }
-
-            // if the target position is higher than us, jump
-            if (distanceToTargetPosition < 4 && currentPosition.Z + 3 < targetPosition.Z)
-            {
-                Jump.Invoke();
             }
 
             Vector3 positionToGoTo = BotUtils.MoveAhead(GetRotation.Invoke(), targetPosition, 2);
@@ -174,15 +168,10 @@ namespace AmeisenBotX.Core.Movement
             if (DateTime.Now - LastJumpCheck > TimeSpan.FromMilliseconds(250))
             {
                 double distanceTraveled = LastPosition.GetDistance(GetPosition.Invoke());
-                if ((LastPosition.X == 0 && LastPosition.Y == 0 && LastPosition.Z == 0) || distanceTraveled < 0.01)
-                {
-                    TryCount++;
-                }
-
-                if (TryCount > 0)
+                if ((LastPosition.X == 0 && LastPosition.Y == 0 && LastPosition.Z == 0) || distanceTraveled < 0.3)
                 {
                     Jump.Invoke();
-                    TryCount = 0;
+                    TryCount++;
                 }
 
                 LastPosition = GetPosition.Invoke();
